@@ -310,7 +310,7 @@
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
 #define TEMP_SENSOR_4 0
-#define TEMP_SENSOR_BED 0
+#define TEMP_SENSOR_BED 11
 #define TEMP_SENSOR_CHAMBER 0
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
@@ -475,8 +475,8 @@
  * details can be tuned in Configuration_adv.h
  */
 
-#define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
-#define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
+// #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
+// #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -884,9 +884,9 @@
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 200
+#define X_MAX_POS 170
+#define Y_MAX_POS 180
+#define Z_MAX_POS 110
 
 /**
  * Software Endstops
@@ -1118,11 +1118,14 @@
  */
 //#define Z_PROBE_END_SCRIPT "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
 
-#define HOMING_FEEDRATE {20*60, 20*60, 2*60, 0}  // set the homing speeds (mm/min)
+#define HOMING_FEEDRATE {1800, 1800, 300, 0}  // set the homing speeds (mm/min)
 
 // @section homing
 
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {98.76,100,1538.46,500}  // default steps per unit for Ultimaker
+// Extruder calibration, via: http://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide#E_steps
+// e_steps_per_mm = (motor_steps_per_rev * driver_microstep) * (big_gear_teeth / small_gear_teeth) / (hob_effective_diameter * pi)
+// =(200*16) * (47/9) / (7 * 3.14159)
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {98.76, 100, 1538.46, 759.90}  // default steps per unit for Ultimaker
 #define DEFAULT_MAX_FEEDRATE          {300, 300, 5, 25}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {3000,3000,100,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
