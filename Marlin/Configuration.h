@@ -103,6 +103,18 @@
 // Enable to show the bitmap in Marlin/_Statusscreen.h on the status screen.
 //#define CUSTOM_STATUS_SCREEN_IMAGE
 
+//
+// *** VENDORS PLEASE READ *****************************************************
+//
+// Marlin now allow you to have a vendor boot image to be displayed on machine
+// start. When SHOW_CUSTOM_BOOTSCREEN is defined Marlin will first show your
+// custom boot image and then the default Marlin boot image is shown.
+//
+// We suggest for you to take advantage of this new feature and keep the Marlin
+// boot image unmodified. For an example have a look at the bq Hephestos 2
+// example configuration folder.
+//
+//#define SHOW_CUSTOM_BOOTSCREEN
 // @section machine
 
 /**
@@ -114,8 +126,14 @@
  */
 #define SERIAL_PORT 0
 
-// This determines the communication speed of the printer
-// :[2400,9600,19200,38400,57600,115200,250000]
+/**
+ * This setting determines the communication speed of the printer.
+ *
+ * 250000 works in most cases, but you might try a lower speed if
+ * you commonly experience drop-outs during host printing.
+ *
+ * :[2400, 9600, 19200, 38400, 57600, 115200, 250000]
+ */
 #define BAUDRATE 250000
 
 // Enable the Bluetooth serial interface on AT90USB devices
@@ -247,7 +265,6 @@
     #define AUTO_POWER_CONTROLLERFAN
     #define POWER_TIMEOUT 30
   #endif
-
 #endif
 
 // @section temperature
@@ -309,6 +326,7 @@
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
+#define TEMP_SENSOR_4 0
 #define TEMP_SENSOR_BED 7
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
@@ -369,6 +387,7 @@
                                   // Set/get with gcode: M301 E[extruder number, 0-2]
   #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
                                   // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
+  #define K1 0.95 //smoothing factor within the PID
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
@@ -473,8 +492,8 @@
  * details can be tuned in Configuration_adv.h
  */
 
-// #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
-// #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
+#define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
+#define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -554,7 +573,6 @@
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
-
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
 //#define ENDSTOP_INTERRUPTS_FEATURE
@@ -638,9 +656,9 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-#define DEFAULT_XJERK                 10.0
-#define DEFAULT_YJERK                 10.0
-#define DEFAULT_ZJERK                  0.3
+#define DEFAULT_XJERK                 20.0
+#define DEFAULT_YJERK                 20.0
+#define DEFAULT_ZJERK                  0.4
 #define DEFAULT_EJERK                  5.0
 
 /**
@@ -845,10 +863,13 @@
 #define INVERT_Y_DIR true
 #define INVERT_Z_DIR false
 
+// Enable this option for Toshiba stepper drivers
+//#define CONFIG_STEPPERS_TOSHIBA
+
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true
+#define INVERT_E0_DIR false
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -868,9 +889,6 @@
 #define X_HOME_DIR -1
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
-
-#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
-#define max_software_endstops true // If true, axis won't move to coordinates greater than the defined lengths below.
 
 // @section machine
 
@@ -1116,24 +1134,19 @@
  */
 //#define Z_PROBE_END_SCRIPT "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
 
-#define HOMING_FEEDRATE {1800, 1800, 300, 0}  // set the homing speeds (mm/min)
+// @section homing
 
 // @section homing
 
-// X/Y axis configuration:
-// Stepper: 200 steps / rev
-// Microstepping: 16x => 3200 usteps / rev
-// Gear: 16 teeth / rev
-// Belt: 5 teeth per cm => 0.5 teeth / mm
+// Manually set the home position. Leave these undefined for automatic settings.
+// For DELTA this is the top-center of the Cartesian print volume.
+//#define MANUAL_X_HOME_POS 0
+//#define MANUAL_Y_HOME_POS 0
+//#define MANUAL_Z_HOME_POS 0
+
+// Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
-// 1mm = 0.5 teeth = 1/32 rev = 100 usteps
-//
-// Z axis configuration:
-// Stepper: 200 steps / rev
-// Microstepping: 16x => 3200 usteps / rev
-// ACME #12: 12 Threads / inch => 12 threads / 25.4 mm => 2.116 mm / thread (revolution)
-//
-//
+// With this feature enabled:
 //
 // Extruder calibration, via: http://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide#E_steps
 // e_steps_per_mm = (motor_steps_per_rev * driver_microstep) * (big_gear_teeth / small_gear_teeth) / (hob_effective_diameter * pi)
@@ -1254,9 +1267,28 @@
 #define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
 
 //
+// Host Keepalive
+//
+// When enabled Marlin will send a busy status message to the host
+// every couple of seconds when it can't accept commands.
+//
+#define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
+#define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
+
+//
 // M100 Free Memory Watcher
 //
 //#define M100_FREE_MEMORY_WATCHER    // Add M100 (Free Memory Watcher) to debug memory usage
+
+//
+// G20/G21 Inch mode support
+//
+//#define INCH_MODE_SUPPORT
+
+//
+// M149 Set temperature units support
+//
+//#define TEMPERATURE_UNITS_SUPPORT
 
 //
 // G20/G21 Inch mode support
