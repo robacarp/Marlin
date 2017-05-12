@@ -305,13 +305,11 @@
  *
  * :{ '0': "Not used", '1':"100k / 4.7k - EPCOS", '2':"200k / 4.7k - ATC Semitec 204GT-2", '3':"Mendel-parts / 4.7k", '4':"10k !! do not use for a hotend. Bad resolution at high temp. !!", '5':"100K / 4.7k - ATC Semitec 104GT-2 (Used in ParCan & J-Head)", '501':"100K Zonestar (Tronxy X3A)", '6':"100k / 4.7k EPCOS - Not as accurate as Table 1", '7':"100k / 4.7k Honeywell 135-104LAG-J01", '8':"100k / 4.7k 0603 SMD Vishay NTCS0603E3104FXT", '9':"100k / 4.7k GE Sensing AL03006-58.2K-97-G1", '10':"100k / 4.7k RS 198-961", '11':"100k / 4.7k beta 3950 1%", '12':"100k / 4.7k 0603 SMD Vishay NTCS0603E3104FXT (calibrated for Makibox hot bed)", '13':"100k Hisens 3950  1% up to 300°C for hotend 'Simple ONE ' & hotend 'All In ONE'", '20':"PT100 (Ultimainboard V2.x)", '51':"100k / 1k - EPCOS", '52':"200k / 1k - ATC Semitec 204GT-2", '55':"100k / 1k - ATC Semitec 104GT-2 (Used in ParCan & J-Head)", '60':"100k Maker's Tool Works Kapton Bed Thermistor beta=3950", '66':"Dyze Design 4.7M High Temperature thermistor", '70':"the 100K thermistor found in the bq Hephestos 2", '71':"100k / 4.7k Honeywell 135-104LAF-J01", '147':"Pt100 / 4.7k", '1047':"Pt1000 / 4.7k", '110':"Pt100 / 1k (non-standard)", '1010':"Pt1000 / 1k (non standard)", '-4':"Thermocouple + AD8495", '-3':"Thermocouple + MAX31855 (only for sensor 0)", '-2':"Thermocouple + MAX6675 (only for sensor 0)", '-1':"Thermocouple + AD595",'998':"Dummy 1", '999':"Dummy 2" }
  */
-#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_0 7
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
-#define TEMP_SENSOR_4 0
-#define TEMP_SENSOR_BED 11
-#define TEMP_SENSOR_CHAMBER 0
+#define TEMP_SENSOR_BED 7
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
 #define DUMMY_THERMISTOR_998_VALUE 25
@@ -886,7 +884,7 @@
 #define Z_MIN_POS 0
 #define X_MAX_POS 170
 #define Y_MAX_POS 180
-#define Z_MAX_POS 110
+#define Z_MAX_POS 86
 
 /**
  * Software Endstops
@@ -1122,10 +1120,25 @@
 
 // @section homing
 
+// X/Y axis configuration:
+// Stepper: 200 steps / rev
+// Microstepping: 16x => 3200 usteps / rev
+// Gear: 16 teeth / rev
+// Belt: 5 teeth per cm => 0.5 teeth / mm
+//
+// 1mm = 0.5 teeth = 1/32 rev = 100 usteps
+//
+// Z axis configuration:
+// Stepper: 200 steps / rev
+// Microstepping: 16x => 3200 usteps / rev
+// ACME #12: 12 Threads / inch => 12 threads / 25.4 mm => 2.116 mm / thread (revolution)
+//
+//
+//
 // Extruder calibration, via: http://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide#E_steps
 // e_steps_per_mm = (motor_steps_per_rev * driver_microstep) * (big_gear_teeth / small_gear_teeth) / (hob_effective_diameter * pi)
 // =(200*16) * (47/9) / (7 * 3.14159)
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {98.76, 100, 1538.46, 759.90}  // default steps per unit for Ultimaker
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100, 100, 1511.81, 883.441}  // default steps per unit for Ultimaker
 #define DEFAULT_MAX_FEEDRATE          {300, 300, 5, 25}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {3000,3000,100,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
