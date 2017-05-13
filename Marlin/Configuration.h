@@ -619,7 +619,14 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
+// stock
+// #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
+//
+// lulzbot
+//
+// Extruder steps/unit calibration via: http://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide#E_steps
+// e_steps_per_mm = (motor_steps_per_rev * driver_microstep) * (big_gear_teeth / small_gear_teeth) / (hob_effective_diameter * pi) =(200*16) * (47/9) / (7 * 3.14159)
+#define DEFAULT_AXIS_STEPS_PER_UNIT {100, 100, 1511.81, 883.441}
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -869,7 +876,7 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR false
+#define INVERT_E0_DIR true
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -1178,8 +1185,8 @@
 #endif
 
 // Homing speeds (mm/m)
-#define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (4*60)
+#define HOMING_FEEDRATE_XY (1800)
+#define HOMING_FEEDRATE_Z  (150)
 
 // @section calibrate
 
